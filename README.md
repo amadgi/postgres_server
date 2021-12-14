@@ -2,42 +2,37 @@
 
 ## Vision and Goals Of The Project:
 
-PostgreSQL is an object-relational database system that is robust and reliable. The vision of this
-project is to build a fault-tolerant PostgreSQL as a service solution.
+PostgreSQL is an object-relational database system that is robust and reliable. The vision of this project is to build a
+fault-tolerant PostgreSQL as a service solution.
 
 The key goals of this project include:
 
-* Building various APIs that can create, delete and modify PostgreSQL databases that are stored on
-  various containers.
-* Developing websites for the users to easily monitor and manage their databases through the APIs we
-  built.
+* Building various APIs that can create, delete and modify PostgreSQL databases that are stored on various containers.
+* Developing websites for the users to easily monitor and manage their databases through the APIs we built.
 
 ## Users/Personas Of The Project:
 
 Database Users
 
-1. As a database user, I want to store my data on a remote server that is fault tolerant, so that it
-   is easy to scale up and down, and if one server is down, my data will not be lost.
+1. As a database user, I want to store my data on a remote server that is fault tolerant, so that it is easy to scale up
+   and down, and if one server is down, my data will not be lost.
 
-2. As a database user, I want to be able to conveniently manage my database through a website,
-   including: create a new database, requesting access to existing database and deleting a database
-   etc.
+2. As a database user, I want to be able to conveniently manage my database through a website, including: create a new
+   database, requesting access to existing database and deleting a database etc.
 
-3. As a database user, I want to be able to monitor my database usage and conveniently have a report
-   generated for me about the various metrics of my databases.
+3. As a database user, I want to be able to monitor my database usage and conveniently have a report generated for me
+   about the various metrics of my databases.
 
 ## Scope and Features Of The Project:
 
-The project covers the build and deployment of a Web Application with an API implementation using
-which the user will be able to create PostgreSQL instances on different VMs and spin-up new
-databases as required. The below features can be considered as in scope for the project
-implementation:
+The project covers the build and deployment of a Web Application with an API implementation using which the user will be
+able to create PostgreSQL instances on different VMs and spin-up new databases as required. The below features can be
+considered as in scope for the project implementation:
 
-- Create a Web-Application that the user will be able to interact with and perform various
-  operations.
+- Create a Web-Application that the user will be able to interact with and perform various operations.
 - Creation of various APIs for the purpose of :
-- Creation of new databases on the existing PostgreSQL instances. This should also create a backup
-  database that shadows the primary database on another PostgreSQL instance.
+- Creation of new databases on the existing PostgreSQL instances. This should also create a backup database that shadows
+  the primary database on another PostgreSQL instance.
 - Delete existing PostgreSQL database.
 - Get information about a PostgreSQL database.
 - Change settings of an existing database.
@@ -46,15 +41,13 @@ implementation:
 Stretch Goals:
 
 * Provide Client Authentication over SSL.
-* Expand the API service to function across multiple clouds (e.g. a private OpenStack cloud and
-  Google Cloud).
+* Expand the API service to function across multiple clouds (e.g. a private OpenStack cloud and Google Cloud).
 
 ## Solution Concept:
 
-The system will consist of a Web Application that will be used by the user and the corresponding API
-logic layer will be responsible for creating the database instances as well as getting the data
-requested by the user. Initially, the entire project will be done on an OpenStack based Cloud and
-then later can be expanded to accommodate other private clouds.
+The system will consist of a Web Application that will be used by the user and the corresponding API logic layer will be
+responsible for creating the database instances as well as getting the data requested by the user. Initially, the entire
+project will be done on an OpenStack based Cloud and then later can be expanded to accommodate other private clouds.
 
 ### Technology Used
 
@@ -74,52 +67,47 @@ We envision the final structure to be as given below.
 
 [figure 1]: https://github.com/libing-milly/cs6620_postgresql/blob/main/final_diagram.png "Logo Title Text 2"
 
-The above diagram presents the conceptual design we have for PGSQL as a Service (PGSQLaaS) system.
-There are mainly 4 componenets:
+The above diagram presents the conceptual design we have for PGSQL as a Service (PGSQLaaS) system. There are mainly 4
+componenets:
 
 * the React web application;
 * the Backend Server that handles database CRUD operation;
 * the Central Lookup Repository that maintains information needed to connect to a Postgres Server;
-* the Postgres Servers along with a poller script for updating server information to the Central
-  Lookup Server.
+* the Postgres Servers along with a poller script for updating server information to the Central Lookup Server.
 
-The user can either calls the APIs directly or through the web application we developed. When a user
-trigger an API call through the web application, the web application will call the backend server
-through API.
+The user can either calls the APIs directly or through the web application we developed. When a user trigger an API call
+through the web application, the web application will call the backend server through API.
 
-The Backend Server and Central Lookup Repository are are hosted on one VM. This VM is used only for
-the purpose of hosting this server. When the backend server receives a request, it will check the
-central lookup repository for information needed to connect to the correct postgres server,
-including the ip address, whether the postgres server is primary or sandby, and its availability.
-When the backend server found the information needed, it will then connect to the appropriate
-postgres server and sends appropriate commmands as requested.
+The Backend Server and Central Lookup Repository are are hosted on one VM. This VM is used only for the purpose of
+hosting this server. When the backend server receives a request, it will check the central lookup repository for
+information needed to connect to the correct postgres server, including the ip address, whether the postgres server is
+primary or sandby, and its availability. When the backend server found the information needed, it will then connect to
+the appropriate postgres server and sends appropriate commmands as requested.
 
-The Postgres Servers are always created in pairs on 2 separate VMs, with one being parimary and the
-other being the standby. When a postgres server receives a command from the backend server, the
-command will be automatically replicated to its standby server. On every VM that runs a postgres
-server, there is also a poller script that will call the Central Lookup API on a schedule to update
-the postgres server's inforamtion to the Central Lookup Repository. In the scenario when the primary
-postgres server fails, the standby postgres server will automatically become the primary, and the
+The Postgres Servers are always created in pairs on 2 separate VMs, with one being parimary and the other being the
+standby. When a postgres server receives a command from the backend server, the command will be automatically replicated
+to its standby server. On every VM that runs a postgres server, there is also a poller script that will call the Central
+Lookup API on a schedule to update the postgres server's inforamtion to the Central Lookup Repository. In the scenario
+when the primary postgres server fails, the standby postgres server will automatically become the primary, and the
 poller script will update this information to the Central Lookup Repository.
 
 ## Acceptance criteria:
 
-* Our web application supports basic functions such as creating, deleting and updating a Postgres
-  database, in a fault-tolerent mannner.
+* Our web application supports basic functions such as creating, deleting and updating a Postgres database, in a
+  fault-tolerent mannner.
 
 ## Release Planning:
 
 We will attempt to deliver our project in the following stages:
 
-1. A simple website and the corresponding APIs for the user to create and delete a PostgreSQL
-   database on a container.
-2. A more comprehensive website with functions including viewing the meta information on current
-   databases, updating the parameters of databases. The stretch goals if time permits.
+1. A simple website and the corresponding APIs for the user to create and delete a PostgreSQL database on a container.
+2. A more comprehensive website with functions including viewing the meta information on current databases, updating the
+   parameters of databases. The stretch goals if time permits.
 
 ## Developer Guide:
 
-In the following sections we will explain the steps needed to set up each of the 4 main components
-of this project in order:
+In the following sections we will explain the steps needed to set up each of the 4 main components of this project in
+order:
 
 1. the configuration of postgres server (for auto replication and failover)
 2. the backend server
@@ -130,7 +118,7 @@ of this project in order:
 
 ### Python and Virtual-Environment Setup
 
-Follow the below mentioned steps : 
+Follow the below mentioned steps :
 
 1. Install Python
 
@@ -158,21 +146,40 @@ Follow the below mentioned steps :
 
 `cd postgres_server`
 
+`pip install -r requirements.txt`
+
 `nohup python application.py &`
 
-5. Update the VMs setup as database instances in the central repository manually.
+### Setup of Central Repository
+
+The central repository initially needs to be created manually with the IPs (Floating IP if available or Private IPs) of
+the VMs that have been created. A sample central repository has been checked in with the code. You can edit the same
+file and re-upload it on the VM to include the VMs created later.
 
 ### Setup of Poller Script On Database VM
 
-`poller.py` is the stand alone poller script that should be deployed and run on the VMs that host Postgres Server. 
+`poller.py` is the stand alone poller script that should be deployed and run on the VMs that host Postgres Server.
 
 1. Deploy poller script to a remote server
 
-After you cloned the repository, in the root directory of this repository, use `scp -i [path to your ssh key] poller.py [remote server user name]@[remote server ip address]:/home/[remote server user name]` command to copy the `poller.py` file to your remote server. 
+After you cloned the repository, in the root directory of this repository, in the `poller.py`, change the URL with the
+host of where your APIs are running.
+Use `scp -i [path to your ssh key] poller.py [remote server user name]@[remote server ip address]:/home/[remote server user name]`
+command to copy the `poller.py` file to your remote server.
 
 2. Run poller script
 
-If there is no python3 installed on your server, run `sudo yum install python3` first to install python3. 
+If there is no python3 installed on your server, run `sudo yum install python3` first to install python3.
 
 Use the command `python3 poller.py` to run the poller script.
+
+## Current Deployment Strategy for API
+
+As per the current design, the APIs are deployed on a separate VM with a floating IP so that they can be access
+externally from the Web-Application. This floating IP will also be used to access the Swagger API for the system.
+
+## Front-end Web Application
+
+The instructions to setup the web application and the PostgreSQL servers and their replication can be found
+at : https://github.com/libing-milly/cs6620_postgresql
 
