@@ -109,9 +109,9 @@ We will attempt to deliver our project in the following stages:
 In the following sections we will explain the steps needed to set up each of the 4 main components of this project in
 order:
 
-1. the configuration of postgres server (for auto replication and failover)
-2. the backend server
-3. the central repository and the poller script
+1. the backend API server
+2. the central repository and the poller script
+3. the configuration of postgres server (for auto replication and failover)
 4. the web interface
 
 ## API Setup
@@ -162,10 +162,10 @@ file and re-upload it on the VM to include the VMs created later.
 
 1. Deploy poller script to a remote server
 
-After you cloned the repository, in the root directory of this repository, in the `poller.py`, change the URL with the
-host of where your APIs are running.
-Use `scp -i [path to your ssh key] poller.py [remote server user name]@[remote server ip address]:/home/[remote server user name]`
-command to copy the `poller.py` file to your remote server.
+After you cloned the repository, in the root directory of this repository, in the `poller.py`, update the `URL=` with the
+host address of where your API server is running.
+
+Then use  the command `scp -i [path to your ssh key] poller.py [remote server user name]@[remote server ip address]:/home/[remote server user name]` to copy the `poller.py` file to your remote server.
 
 2. Run poller script
 
@@ -178,8 +178,8 @@ Use the command `python3 poller.py` to run the poller script.
 As per the current design, the APIs are deployed on a separate VM with a floating IP so that they can be access
 externally from the Web-Application. This floating IP will also be used to access the Swagger API for the system.
 
-## Front-end Web Application
+## Front-end Web Application and Postgres Server Setup
 
-The instructions to setup the web application and the PostgreSQL servers and their replication can be found
-at : https://github.com/libing-milly/cs6620_postgresql
+The code and instructions to setup the web application, along with the configuration of PostgreSQL servers can be found
+via https://github.com/libing-milly/cs6620_postgresql under "Developer Guide" section.
 
